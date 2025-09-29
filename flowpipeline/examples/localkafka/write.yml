@@ -1,0 +1,23 @@
+---
+# Note that this write.yml could just as well be a real goflow2 instance as no
+# additional processing takes place. Thus, using goflow2 directly might be
+# preferrable.
+
+
+###############################################################################
+# Receive Netflow v9 using Goflow on a local port.
+- segment: goflow
+  config:
+    listen: "sflow://:6343,netflow://:2055"
+    workers: 1
+
+###############################################################################
+# Produce flow messages to a local cluster for further pipelines. TLS and auth
+# are disabled. Usual config for a dev Kafka setup.
+- segment: kafkaproducer
+  config:
+    server: localhost:9092
+    topic: flows
+    group: test
+    tls: 0
+    auth: 0

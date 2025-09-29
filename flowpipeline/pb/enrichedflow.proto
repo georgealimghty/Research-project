@@ -1,0 +1,289 @@
+syntax = "proto3";
+package flowpb;
+option go_package = "github.com/BelWue/flowpipeline/pb;";
+
+message EnrichedFlow {
+
+  enum FlowType {
+    FLOWUNKNOWN = 0;
+    SFLOW_5 = 1;
+    NETFLOW_V5 = 2;
+    NETFLOW_V9 = 3;
+    IPFIX = 4;
+    EBPF = 5;
+  }
+
+  FlowType type = 1;
+
+  uint64 time_received = 2;
+  uint64 time_received_ns = 110;
+  uint32 sequence_num = 4;
+  uint64 sampling_rate = 3;
+
+  uint32 flow_direction = 42;
+  uint64 time_flow_start_ns = 111;
+  uint64 time_flow_end_ns = 112;
+
+  // Sampler information
+  bytes sampler_address = 11;
+
+  // Found inside packet
+  uint64 time_flow_end = 5;
+  uint64 time_flow_start_ms = 63;
+  uint64 time_flow_end_ms = 64;
+
+  // Size of the sampled packet
+  uint64 bytes = 9;
+  uint64 packets = 10;
+
+  // Source/destination addresses
+  bytes src_addr = 6;
+  bytes dst_addr = 7;
+
+  // Layer 3 protocol (IPv4/IPv6/ARP/MPLS...)
+  uint32 etype = 30;
+
+  // Layer 4 protocol
+  uint32 proto = 20;
+
+  // Ports for UDP and TCP
+  uint32 src_port = 21;
+  uint32 dst_port = 22;
+
+  // Interfaces
+  uint32 in_if = 18;
+  uint32 out_if = 19;
+
+  // Ethernet information
+  uint64 src_mac = 27;
+  uint64 dst_mac = 28;
+
+  // Vlan
+  uint32 src_vlan = 33;
+  uint32 dst_vlan = 34;
+  // 802.1q VLAN in sampled packet
+  uint32 vlan_id = 29;
+
+  // VRF
+  uint32 ingress_vrf_id = 39;
+  uint32 egress_vrf_id = 40;
+
+  // IP and TCP special flags
+  uint32 ip_tos = 23;
+  uint32 forwarding_status = 24;
+  uint32 ip_ttl = 25;
+  uint32 ip_flags = 38;
+  uint32 tcp_flags = 26;
+  uint32 icmp_type = 31;
+  uint32 icmp_code = 32;
+  uint32 ipv6_flow_label = 37;
+  // Fragments (IPv4/IPv6)
+  uint32 fragment_id = 35;
+  uint32 fragment_offset = 36;
+  uint32 bi_flow_direction = 41;
+
+  // Autonomous system information
+  uint32 src_as = 14;
+  uint32 dst_as = 15;
+
+  bytes next_hop = 12;
+  uint32 next_hop_as = 13;
+
+  // Prefix size
+  uint32 src_net = 16;
+  uint32 dst_net = 17;
+
+  // BGP information
+  bytes bgp_next_hop = 100;
+  repeated uint32 bgp_communities = 101;
+  repeated uint32 as_path = 102;
+
+  // MPLS information
+  repeated uint32 mpls_ttl = 80;
+  repeated uint32 mpls_label = 81;
+  repeated bytes mpls_ip = 82;
+  bool has_mpls = 53;
+  uint32 mpls_count = 54;
+  uint32 mpls_1_ttl = 55; // First TTL
+  uint32 mpls_1_label = 56; // First Label
+  uint32 mpls_2_ttl = 57; // Second TTL
+  uint32 mpls_2_label = 58; // Second Label
+  uint32 mpls_3_ttl = 59; // Third TTL
+  uint32 mpls_3_label = 60; // Third Label
+  uint32 mpls_last_ttl = 61; // Last TTL
+  uint32 mpls_last_label = 62; // Last Label
+  bytes mpls_label_ip = 65; // MPLS TOP Label IP 
+
+  uint32 observation_domain_id = 70;
+  uint32 observation_point_id = 71;
+
+  string src_country = 1000;
+  string dst_country = 1001;
+
+  // Encapsulation
+  enum LayerStack {
+    Ethernet = 0;
+    IPv4 = 1;
+    IPv6 = 2;
+    TCP = 3;
+    UDP = 4;
+    MPLS = 5;
+    Dot1Q = 6;
+    ICMP = 7;
+    ICMPv6 = 8;
+    GRE = 9;
+    IPv6HeaderRouting = 10;
+    IPv6HeaderFragment = 11;
+    Geneve = 12;
+    Teredo = 13;
+    Custom = 99;
+    // todo: add nsh
+  }
+  repeated LayerStack layer_stack = 103;
+  repeated uint32 layer_size = 104;
+
+  repeated bytes ipv6_routing_header_addresses = 105; // SRv6
+  uint32 ipv6_routing_header_seg_left = 106; // SRv6
+
+  // bwNET custom fields:
+
+  // input/bpf:
+  // Many of the above fields can not be filled when creating flows from eBPF.
+  // However, there are some additional packet level metrics available,
+  // inspired by this list:
+  // https://github.com/ahlashkari/CICFlowMeter/blob/master/ReadMe.txt
+
+  uint32 PacketBytesMin = 2100;    // new, single packet means uint32 < MTU
+  uint32 PacketBytesMax = 2101;    // new
+  uint32 PacketBytesMean = 2102;   // new
+  uint32 PacketBytesStdDev = 2103; // new
+
+  uint64 PacketIATMin = 2110;    // new
+  uint64 PacketIATMax = 2111;    // new
+  uint64 PacketIATMean = 2112;   // new
+  uint64 PacketIATStdDev = 2113; // new
+
+  uint32 HeaderBytes = 2120; // new
+
+  uint64 FINFlagCount = 2130; // new
+  uint64 SYNFlagCount = 2131; // new
+  uint64 RSTFlagCount = 2132; // new
+  uint64 PSHFlagCount = 2133; // new
+  uint64 ACKFlagCount = 2134; // new
+  uint64 URGFlagCount = 2135; // new
+  uint64 CWRFlagCount = 2136; // new
+  uint64 ECEFlagCount = 2137; // new
+
+  uint64 PayloadPackets = 2140; // new
+
+  uint64 TimeActiveMin = 2150;    // new
+  uint64 TimeActiveMax = 2151;    // new
+  uint64 TimeActiveMean = 2152;   // new
+  uint64 TimeActiveStdDev = 2153; // new
+  uint64 TimeIdleMin = 2154;      // new
+  uint64 TimeIdleMax = 2155;      // new
+  uint64 TimeIdleMean = 2156;     // new
+  uint64 TimeIdleStdDev = 2157;   // new
+
+  // modify/addcid
+  uint32 Cid = 2000; // TODO: deprecate and provide as helper?
+  string CidString = 2001; // deprecated, delete for v1.0.0
+  uint32 SrcCid = 2012;
+  uint32 DstCid = 2013;
+
+  // modify/anonymize
+  enum AnonymizedType {
+    NotAnonymized = 0;
+    CryptoPAN = 1;
+    Subnet = 2;
+    SubnetAndCryptoPAN = 3;
+  }
+  AnonymizedType SrcAddrAnon = 2160;
+  AnonymizedType DstAddrAnon = 2161;
+  uint32 SrcAddrPreservedLen = 2162;
+  uint32 DstAddrPreservedLen = 2163;
+
+  AnonymizedType SamplerAddrAnon = 2164;
+  uint32 SamplerAddrPreservedPrefixLen = 2165;
+
+  AnonymizedType NextHopAnon = 2166;
+  uint32 NextHopAnonPreservedPrefixLen = 2167;
+
+  // modify/bgp
+  // as done by a number of Netflow implementations, these refer to the destination
+  uint32 Med = 2172;
+  uint32 LocalPref = 2173;
+  enum ValidationStatusType {
+    Unknown = 0;
+    Valid = 1;
+    NotFound = 2;
+    Invalid = 3;
+  }
+  ValidationStatusType ValidationStatus = 2174;
+
+  // modify/geolocation
+  string RemoteCountry = 2010; // TODO: deprecate and provide as helper
+  string SrcCountryBW = 2014;
+  string DstCountryBW = 2015;
+
+  // modify/normalize
+  enum NormalizedType {
+    No = 0;
+    Yes = 1;
+  }
+  NormalizedType Normalized = 2002; // TODO: deprecate and replace with helper?
+  // TODO: if not, replace with OriginalSamplingRate instead and set SamplingRate to 1?
+
+  // modify/protomap
+  string ProtoName = 2009; // TODO: deprecate and replace with helper, why lug a string along...
+
+  // modify/remoteaddress
+  enum RemoteAddrType {
+    Neither = 0;
+    Src = 1;
+    Dst = 2;
+  }
+  RemoteAddrType RemoteAddr = 2011; // TODO: figure out a better system? applicable only to service providers right now...
+
+  // modify/reversedns
+  string SrcHostName = 2180;
+  string DstHostName = 2181;
+  string NextHopHostName = 2182;
+  string SrcASName = 2183;
+  string DstASName = 2184;
+  string NextHopASName = 2185;
+  string SamplerHostName = 2186;
+  bool inlist = 2976;
+
+  // modify/snmp
+  string SrcIfName = 2003;  // TODO: rename to match InIf and OutIf
+  string SrcIfDesc = 2004;  // TODO: rename to match InIf and OutIf
+  uint32 SrcIfSpeed = 2005; // TODO: rename to match InIf and OutIf
+  string DstIfName = 2006;  // TODO: rename to match InIf and OutIf
+  string DstIfDesc = 2007;  // TODO: rename to match InIf and OutIf
+  uint32 DstIfSpeed = 2008; // TODO: rename to match InIf and OutIf
+
+  // general
+  string Note = 2016; // free-form field to implement anything
+
+  // modify/addrstrings
+  string SourceIP = 2290;
+  string DestinationIP = 2291;
+  string NextHopIP = 2292;
+  string SamplerIP = 2293;
+  string SourceMAC = 2294;
+  string DestinationMAC = 2295;
+
+// VRF
+uint32 IngressVrfIDBW = 2539;
+uint32 EgressVrfIDBW = 2540;
+
+// Replaced by ns values
+uint64 TimeFlowStart = 2538;
+//  uint64 TimeFlowEnd = 2505;
+// Kept for legacy support
+
+// Used for Split in source and Destination Parts
+  repeated uint32 src_as_path = 2301;
+  repeated uint32 dst_as_path = 2302;
+}

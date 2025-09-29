@@ -1,0 +1,27 @@
+---
+###############################################################################
+# Consume flow messages, it's best to use an enriched topic as flowdump
+# printing involves interface descriptions.
+- segment: kafkaconsumer
+  config:
+    server: kafka01.example.com:9093
+    topic: flow-messages-enriched
+    group: myuser-flowdump
+    user: myuser
+    pass: $KAFKA_SASL_PASS
+
+###############################################################################
+# Add human readable protocol names to any flow message
+- segment: protomap
+
+###############################################################################
+# creates endpoints for prometheus with the given Port
+# default endpoints are:
+# <host>:8080/flowdata
+# <host>:8080/metrics
+# the given labels in this example are the default ones. 
+# They are also applied if the labels field is omitted.
+- segment: prometheus
+  config:
+    endpoint: ":8080"
+    labels: "SamplerAddress,Etype,DstPort,ProtoName,FlowDirection,SrcAddr,SrcAs,DstAs"

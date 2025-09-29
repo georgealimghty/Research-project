@@ -1,0 +1,20 @@
+---
+###############################################################################
+# Generate flow messages from packet headers. This uses a eBPF program and a
+# custom flow cache. Requires root or the correct capabilities as specified by
+# the projects README.md
+- segment: bpf
+  config:
+    device: eth0
+
+###############################################################################
+# Filter flows dynamically, i.e. via commandline argument. This makes for a
+# tcpdump-style experience
+- segment: flowfilter
+  config:
+    filter: $0  # this refers to the first arg.
+
+###############################################################################
+# Print flowdump, this is a predefined format that is not configurable at this
+# point.
+- segment: printflowdump
