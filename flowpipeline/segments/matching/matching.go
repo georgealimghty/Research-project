@@ -86,9 +86,9 @@ func (m *MatchingSegment) Run(wg *sync.WaitGroup) {
 		}
 
 		if matched {
-			if msg.Note == "" {
-				msg.Note = "inlist"
-			}
+			// Tag matched flows so they can be filtered downstream
+			TagAsBadIP(msg)
+
 			if src != "" && m.CSVData[src] != "" {
 				fmt.Printf("MATCH FOUND! IP: %s is on the blocklist\n", src)
 			} else if dst != "" && m.CSVData[dst] != "" {

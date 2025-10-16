@@ -13,6 +13,7 @@ import (
 type Filter struct {
 	flowmsg     *pb.EnrichedFlow
 	__direction string // this is super hacky
+	useTid      bool   // when true, evaluate cid matches against Tid
 }
 
 func (f *Filter) CheckFlow(expr *parser.Expression, flowmsg *pb.EnrichedFlow) (bool, error) {
@@ -126,13 +127,20 @@ func (f *Filter) Visit(n parser.Node, next func() error) error {
 				*node.Upper)
 		}
 	case *parser.CidRangeMatch:
-		(*node).EvalResult, _ = processNumericRange(node.NumericRange, uint64(f.flowmsg.Cid))
-		(*node).EvalResultSrc, _ = processNumericRange(node.NumericRange, uint64(f.flowmsg.SrcCid))
-		(*node).EvalResultDst, err = processNumericRange(node.NumericRange, uint64(f.flowmsg.DstCid))
-		if err != nil {
-			return fmt.Errorf("[error] Bad cid range, lower %d > upper %d",
-				*node.Lower,
-				*node.Upper)
+		// If the original filter used `tid`, FlowFilter.New set useTid
+		// and rewrote the expression to `cid`. In that case, evaluate against Tid.
+		if f.useTid {
+			(*node).EvalResult, _ = processNumericRange(node.NumericRange, uint64(f.flowmsg.Tid))
+			// No directional variant for Tid; src/dst remain false
+		} else {
+			(*node).EvalResult, _ = processNumericRange(node.NumericRange, uint64(f.flowmsg.Cid))
+			(*node).EvalResultSrc, _ = processNumericRange(node.NumericRange, uint64(f.flowmsg.SrcCid))
+			(*node).EvalResultDst, err = processNumericRange(node.NumericRange, uint64(f.flowmsg.DstCid))
+			if err != nil {
+				return fmt.Errorf("[error] Bad cid range, lower %d > upper %d",
+					*node.Lower,
+					*node.Upper)
+			}
 		}
 	case *parser.RegularMatchGroup:
 		switch {

@@ -190,6 +190,7 @@ message EnrichedFlow {
   string CidString = 2001; // deprecated, delete for v1.0.0
   uint32 SrcCid = 2012;
   uint32 DstCid = 2013;
+  uint32 Tid = 2600; // Added New for Tagging the matched data
 
   // modify/anonymize
   enum AnonymizedType {
