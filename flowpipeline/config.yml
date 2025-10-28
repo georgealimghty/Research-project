@@ -1,1 +1,12 @@
+-segment: stdin
+  config:
+    filename: "test.json"
+    eocloses: "true"
 
+-segment: matching
+  config:
+    ip_list_path:
+
+-segment: flowfilter
+  config:
+    filter: tid 65001
