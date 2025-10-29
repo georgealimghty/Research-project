@@ -1,0 +1,13 @@
+scrape_configs:
+  - job_name: flowpipeline
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["localhost:9110"]
+    metrics_path: /metrics
+
+  - job_name: flowpipeline_flowdata
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["localhost:9110"]
+    metrics_path: /flowdata
+

@@ -1,0 +1,86 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": {"list": []},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Bad IP Traffic (bps)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "__PROM_DS__"
+      },
+      "fieldConfig": {
+        "defaults": {"unit": "bps"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum by (Note) (rate(flow_bits{Note=\"bad_ip\"}[5m]))",
+          "legendFormat": "{{Note}}",
+          "refId": "A"
+        }
+      ],
+      "options": {"legend": {"displayMode": "table", "placement": "bottom"}}
+    },
+    {
+      "type": "stat",
+      "title": "Bad IP Bytes (5m)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "__PROM_DS__"
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(flow_bits{Note=\"bad_ip\"}[5m])) / 8",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "bytes"}}
+    },
+    {
+      "type": "bargauge",
+      "title": "Top Bad IP talkers (bps)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "__PROM_DS__"
+      },
+      "targets": [
+        {
+          "expr": "topk(10, sum by (SrcAddr) (rate(flow_bits{Note=\"bad_ip\"}[5m])))",
+          "refId": "A"
+        }
+      ],
+      "options": {"orientation": "horizontal"}
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["flowpipeline", "bad_ip"],
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "__PROM_DS__"},
+        "query": "label_values(flow_bits, job)",
+        "refresh": 2,
+        "hide": 2
+      }
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Flowpipeline - Bad IP Monitoring",
+  "uid": "flow-bad-ip",
+  "version": 1
+}
+
+
