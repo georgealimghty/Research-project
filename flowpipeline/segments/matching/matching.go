@@ -86,13 +86,16 @@ func (m *MatchingSegment) Run(wg *sync.WaitGroup) {
 		}
 
 		if matched {
-			// Tag matched flows so they can be filtered downstream
-			TagAsBadIP(msg)
+			// Classify the attack type based on port and protocol
+			attackType := ClassifyAttackType(msg)
+
+			// Tag matched flows with tid 65001 and specific attack type in Note field
+			TagWithID(msg, TagIDBadIP, attackType)
 
 			if src != "" && m.CSVData[src] != "" {
-				fmt.Printf("MATCH FOUND! IP: %s is on the blocklist\n", src)
+				fmt.Printf("MATCH FOUND! IP: %s is on the blocklist - Attack Type: %s\n", src, attackType)
 			} else if dst != "" && m.CSVData[dst] != "" {
-				fmt.Printf("MATCH FOUND! IP: %s is on the blocklist\n", dst)
+				fmt.Printf("MATCH FOUND! IP: %s is on the blocklist - Attack Type: %s\n", dst, attackType)
 			}
 		}
 

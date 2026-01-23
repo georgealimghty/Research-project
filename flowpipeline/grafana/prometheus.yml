@@ -1,0 +1,17 @@
+# Prometheus configuration for FlowPipeline matching data
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Scrape flow data metrics
+  - job_name: 'flowpipeline-flows'
+    static_configs:
+      - targets: ['localhost:9110']
+    metrics_path: '/flowdata'
+
+  # Scrape Kafka and system metrics
+  - job_name: 'flowpipeline-meta'
+    static_configs:
+      - targets: ['localhost:9110']
+    metrics_path: '/metrics'

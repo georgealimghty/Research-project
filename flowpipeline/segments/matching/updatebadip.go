@@ -22,12 +22,12 @@ func init() {
 func startBadIPUpdater() {
 	url := strings.TrimSpace(os.Getenv("BAD_IP_URL"))
 	if url == "" {
-		url = "https://nerd.cesnet.cz/nerd/data/bad_ips.txt"
+		url = "https://nerd.cesnet.cz/nerd/data/bad_ips_med_conf.txt"
 	}
 
 	path := strings.TrimSpace(os.Getenv("BAD_IP_PATH"))
 	if path == "" {
-		path = "segments/matching/bad_ips.txt"
+		path = "/root/Research-project/flowpipeline/bad_ips.txt"
 	}
 
 	// If download fails, try again later

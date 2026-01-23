@@ -14,6 +14,18 @@
 # Add human readable protocol names to any flow message
 - segment: protomap
 
+##############################################################################
+# Used to test the matching segment
+-segment: kafkaconsumer
+  config:
+    server: "kafkacluster04.belwue.de:9092,kafkacluster05.belwue.de:9092"
+    topic: "flow-messages-threatlist"
+    group: "naegel"
+    usr: "naegel"
+    pass: "MeXE5fpOvCRtDd27exZ7n6e6v6lz3hySOPjeldK23DosN8INT759pHYRR6IsS4L6"
+
+
+
 ###############################################################################
 # creates endpoints for prometheus with the given Port
 # default endpoints are:

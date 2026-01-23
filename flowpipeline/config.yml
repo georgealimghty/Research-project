@@ -1,0 +1,42 @@
+
+#######################################################################################
+#Used for the matching segment
+- segment: kafkaconsumer
+  config:
+    server: "kafkacluster04.belwue.de:9092,kafkacluster05.belwue.de:9092"
+    topic: "flow-messages-threatlist"
+    group: "threatlist"
+    user: "threatlist"
+    pass: "MeXE5fpOvCRtDd27exZ7n6e6v6lz3hySOPjeldK23DosN8INT759pHYRR6IsS4L6"
+
+
+
+
+#######################################################################################
+- segment: matching
+  config:
+    ip_list_path: "/root/Research-project/flowpipeline/bad_ips.txt"
+
+#######################################################################################
+
+- segment: flowfilter
+  config:
+    filter: "tid 65001"
+
+- segment: csv
+  config:
+    filename: output.csv
+    fields: "TimeFlowStart,SrcAddr,DstAddr,Proto,SrcPort,DstPort,Bytes,Packets,Tid,Note,Inlist,SourceIP,DestinationIP"
+
+
+#######################################################################################
+# creates endpoints for prometheus with the given Port
+# default endpoints are:
+# <host>:8080/flowdata
+# <host>:8080/metrics
+# the given labels in this example are the default ones. 
+# They are also applied if the labels field is omitted.
+- segment: prometheus
+  config:
+    endpoint: ":9110"
+    labels: "SamplerAddress,Etype,DstPort,ProtoName,FlowDirection,SrcAddr,SrcAs,DstAs,Note"
