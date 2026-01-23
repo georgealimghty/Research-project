@@ -2,3 +2,4 @@
 flowpipeline/*.tgz
 flowpipeline/*.log
 flowpipeline/nohup.out
+flowpipeline/kafka-4.1.0-src/
